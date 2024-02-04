@@ -1,0 +1,67 @@
+@using MarketManagementSystem.ViewModels
+@model ProductViewModel
+@{
+  string action = ViewBag.Action ?? string.Empty;
+}
+
+<form method="post" asp-controller="products" asp-action="@action">
+  @if (action?.ToLower() == "edit")
+  {
+    <input type="hidden" asp-for="Product.ProductId" value="@Model.Product.ProductId">
+  }
+  <div class="text-danger" asp-validation-summary="All"></div>
+  <div class="row mb-3">
+    <div class="col-2">
+      <label asp-for="Product.CategoryId" class="col-from-label"></label>
+    </div>
+    <div class="col-6">
+      <select asp-for="Product.CategoryId" class="form-select">
+        <option> - Select Category - </option>
+        @if (Model.Categories != null && Model.Categories.Any())
+        {
+          @foreach (var category in Model.Categories)
+          {
+            <option value="@category.CategoryId">@category.Name</option>
+          }
+        }
+      </select>
+    </div>
+    <div class="col">
+      <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-2">
+      <label asp-for="Product.Name" class="col-from-label"></label>
+    </div>
+    <div class="col-6">
+      <input type="text" asp-for="Product.Name" class="form-control" />
+    </div>
+    <div class="col">
+      <span asp-validation-for="Product.Name" class="text-danger"></span>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-2">
+      <label asp-for="Product.Price" class="col-from-label"></label>
+    </div>
+    <div class="col-6">
+      <input type="number" min="0" step="any" asp-for="Product.Price" class="form-control" />
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-2">
+      <label asp-for="Product.Quantity" class="col-from-label"></label>
+    </div>
+    <div class="col-6">
+      <input type="number" min="1" asp-for="Product.Quantity" class="form-control" />
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-2">
+      <input type="submit" class="btn btn-primary" value="Save" />
+    </div>
+    <div class="col-6">
+    </div>
+  </div>
+</form>
