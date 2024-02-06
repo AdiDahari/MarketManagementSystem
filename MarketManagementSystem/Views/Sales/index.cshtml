@@ -1,0 +1,113 @@
+@model SalesViewModel
+@section title {
+  <div class="row">
+    <div class="col-7">
+      <h3>Sale Console</h3>
+    </div>
+    <div class="col-2"><label for="cashier">Cashier's Name:</label></div>
+    <div class="col-3">DUMMY</div>
+  </div>
+}
+<br>
+<div class="row">
+  <div class="col-4">
+    <div class="text-danger" asp-validation-summary="All"></div>
+    <select asp-for="SelectedCategoryId" class="form-select">
+      <option> - Select a Category - </option>
+      @foreach (var category in Model.Categories)
+      {
+        <option value="@category.CategoryId">@category.Name</option>
+      }
+    </select>
+    <br>
+    <div id="productsPartial">
+      @* Category's product list *@
+    </div>
+    <div id="productDetailsPartial">
+      @* Product's sale details *@
+    </div>
+    <form method="post" asp-controller="sales" asp-action="sell" id="formSale">
+      <input type="hidden" asp-for="SelectedProductId">
+      <div class="form-froup">
+        <label asp-for="QuantityToSell"></label>
+        <input type="number" asp-for="QuantityToSell" id="quantityToSell" class="form-control" min="1" />
+      </div>
+      <div class="col">
+        <span asp-validation-for="QuantityToSell" class="text-danger"></span>
+      </div>
+      <br>
+      <div class="form-group">
+
+        <input type="submit" value="Add" class="btn btn-primary">
+      </div>
+    </form>
+  </div>
+  <div class="col">
+
+  </div>
+</div>
+
+@section Scripts {
+  <script>
+    $(function () {
+      if ($("#SelectedCategoryId").val() > 0) {
+        // Load products if category is selected
+        $(loadProducts("#SelectedCategoryId"))
+        if ($("#SelectedProductId").val() > 0) {
+
+          $(loadProductDetails($("#SelectedProductId").val()))
+          $("#formSale").show();
+        }
+      } else {
+        // Reset form if no category is selected
+        $(resetForm())
+      }
+
+      // Load products by category on change
+      $("#SelectedCategoryId").on("change", function () {
+        $(loadProducts(this))
+
+        $(resetForm())
+      })
+
+      // Highlight selected product
+      $("#productsPartial").on("click", ".product-row", function () {
+        $(".product-row").removeClass("highlight");
+        $(this).addClass("highlight");
+
+        // Update the selected product
+        var productId = $(this).attr("product-id");
+        $(loadProductDetails(productId))
+
+        $("#quantityToSell").val("");
+
+        if (productId > 0) {
+          $("#SelectedProductId").val(productId);
+          $("#formSale").show();
+        }
+        else {
+          $("#SelectedProductId").val("");
+          $("#formSale").hide();
+        }
+      })
+    })
+
+    function resetForm() {
+      $("#formSale").hide();
+      $("#QuantityToSell").val("");
+      $("#productDetailsPartial").html("");
+    }
+
+    function loadProducts(categoryIdAttr) {
+      $("#productsPartial").load("/products/GetProductsByCategoryPartial", { categoryId: $(categoryIdAttr).val() })
+    }
+
+    function loadProductDetails(productId) {
+      $("#productDetailsPartial").load("/sales/SellProductDetailsPartial", { productId }, function () {
+        var maxQuantity = $("#Quantity").val();
+        $("#quantityToSell").attr("max", maxQuantity);
+      })
+    }
+
+  </script>
+}

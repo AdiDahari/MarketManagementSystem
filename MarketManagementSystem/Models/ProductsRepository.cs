@@ -93,5 +93,12 @@ public class ProductsRepository
     }
   }
 
+  public static List<Product> GetProductsByCategoryId(int categoryId)
+  {
+    var products = _products.Where(p => p.CategoryId == categoryId).ToList();
+
+    return (products != null) ? products : new List<Product>();
+
+  }
 
 }

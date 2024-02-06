@@ -1,0 +1,14 @@
+@model Product
+
+@if (Model != null)
+{
+  <input type="hidden" asp-for="Quantity" />
+  <div class="form-group">
+  <label asp-for="Name" class="control-label"></label>
+  <input readonly asp-for="Name" disabled class="form-control" />
+</div>
+  <div class="form-group">
+  <label asp-for="Price" class="control-label"></label>
+  <input readonly id="price" disabled value="@(string.Format("{0:c}", @Model.Price))" class="form-control" />
+</div>
+}
