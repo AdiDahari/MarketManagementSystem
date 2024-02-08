@@ -1,0 +1,78 @@
+@model TransactionsViewModel
+
+@section title {
+  <h3>Transactions Report</h3>
+}
+
+<form method="post" asp-controller="transactions" asp-action="search"
+  class="row justify-content-enter align-items-between">
+  <div class="col-2">
+    <label asp-for="CashierName"></label>
+    <input asp-for="CashierName" class="form-control" />
+  </div>
+  <div class="col-3">
+    <label asp-for="StartDate"></label>
+    <input asp-for="StartDate" type="date" class="form-control" />
+  </div>
+  <div class="col-3">
+    <label asp-for="EndDate"></label>
+    <input asp-for="EndDate" type="date" class="form-control" />
+  </div>
+  <div class="col-2">
+    <label>&nbsp;</label>
+    <input type="submit" value="Search" class="btn btn-primary form-control" />
+  </div>
+  <div class="col-2">
+    <label>&nbsp;</label>
+    <input onclick="printInvoice();" type="button" value="Print" class="btn btn-primary form-control" />
+  </div>
+</form>
+<br>
+<table id="table" class="table">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Cashier Name</th>
+      <th>Product Name</th>
+      <th>Qty Before</th>
+      <th>Qty Sold</th>
+      <th>Qty After</th>
+      <th>Price</th>
+      <th>Sub Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var trans in Model.Transactions)
+    {
+      <tr>
+        <td>@trans.TimeStamp.ToString("dd/MM hh:mm")</td>
+        <td>@trans.CashierName</td>
+        <td>@trans.ProductName</td>
+        <td>@trans.QtyBefore</td>
+        <td>@trans.QtySold</td>
+        <td>@(trans.QtyBefore - trans.QtySold)</td>
+        <td style="text-align: right;">@(string.Format("{0:c}", trans.Price))</td>
+        <td style="text-align: right;">@(string.Format("{0:c}", trans.QtySold * trans.Price))</td>
+      </tr>
+    }
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="6">&nbsp;</td>
+      <td style="text-align: right;">
+        <b>Grand Total:</b>
+      </td>
+      <td style="text-align: right;">
+        <b>@(string.Format("{0:c}", Model.Transactions.Sum(t => t.QtySold * t.Price)))</b>
+    </tr>
+  </tfoot>
+
+</table>
+
+@section Scripts {
+  <script>
+    function printInvoice() {
+      $.print("#table")
+    }
+  </script>
+}
